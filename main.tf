@@ -31,7 +31,7 @@ resource "kind_cluster" "moj_lab" {
   }
 }
 
-# 2. Konfiguracja Kubernetes Provider
+# 2. Konfiguracja Kubernetes
 provider "kubernetes" {
   host                   = kind_cluster.moj_lab.endpoint
   client_certificate     = kind_cluster.moj_lab.client_certificate
@@ -39,7 +39,7 @@ provider "kubernetes" {
   cluster_ca_certificate = kind_cluster.moj_lab.cluster_ca_certificate
 }
 
-# 3. Konfiguracja Helm Provider (To tutaj miałeś błąd - kubernetes musi być W ŚRODKU helm)
+# 3. Konfiguracja Helm
 provider "helm" {
   kubernetes {
     host                   = kind_cluster.moj_lab.endpoint
@@ -62,9 +62,9 @@ resource "helm_release" "nginx" {
   name       = "moj-nginx-z-helma"
   repository = "oci://registry-1.docker.io/bitnamicharts"
   chart      = "nginx"
-  version    = "15.4.2" # Możemy zostawić starą wersję Charta, ale podmienimy mu obraz
+  version    = "15.4.2"
 
-  namespace  = kubernetes_namespace.test.metadata[0].name
+  namespace = kubernetes_namespace.test.metadata[0].name
 
   set {
     name  = "service.type"
@@ -76,12 +76,10 @@ resource "helm_release" "nginx" {
     value = "3"
   }
 
-  # --- NOWOŚĆ: Wymuszamy najnowszy obraz ---
   set {
     name  = "image.tag"
     value = "latest"
   }
-  # -----------------------------------------
 
   depends_on = [kind_cluster.moj_lab]
 }
