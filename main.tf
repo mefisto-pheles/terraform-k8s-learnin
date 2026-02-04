@@ -1,11 +1,11 @@
 terraform {
   required_providers {
     kind = {
-      source = "tehcyx/kind"
+      source  = "tehcyx/kind"
       version = "0.4.0"
     }
     kubernetes = {
-      source = "hashicorp/kubernetes"
+      source  = "hashicorp/kubernetes"
       version = "2.23.0"
     }
   }
@@ -15,23 +15,23 @@ provider "kind" {}
 
 # Konfiguracja klastra
 resource "kind_cluster" "moj_lab" {
-  name = "terraform-k8s-lab"
+  name           = "terraform-k8s-lab"
   wait_for_ready = true
-  
+
   kind_config {
-      kind = "Cluster"
-      api_version = "kind.x-k8s.io/v1alpha4"
-      node {
-          role = "control-plane"
-      }
+    kind        = "Cluster"
+    api_version = "kind.x-k8s.io/v1alpha4"
+    node {
+      role = "control-plane"
+    }
   }
 }
 
 # Konfiguracja providera K8s (zeby mogl gadac z klastrem wyzej)
 provider "kubernetes" {
-  host = kind_cluster.moj_lab.endpoint
-  client_certificate = kind_cluster.moj_lab.client_certificate
-  client_key = kind_cluster.moj_lab.client_key
+  host                   = kind_cluster.moj_lab.endpoint
+  client_certificate     = kind_cluster.moj_lab.client_certificate
+  client_key             = kind_cluster.moj_lab.client_key
   cluster_ca_certificate = kind_cluster.moj_lab.cluster_ca_certificate
 }
 
@@ -48,7 +48,7 @@ resource "kubernetes_deployment" "nginx" {
   metadata {
     name = "nginx-deployment"
     # Wrzucamy to do naszego namespace'a
-    namespace = kubernetes_namespace.test.metadata[0].name 
+    namespace = kubernetes_namespace.test.metadata[0].name
   }
 
   spec {
@@ -71,7 +71,7 @@ resource "kubernetes_deployment" "nginx" {
         container {
           image = "nginx:latest"
           name  = "nginx"
-          
+
           resources {
             limits = {
               cpu    = "0.5"
