@@ -4,7 +4,7 @@ metadata:
   name: gitops-nginx
   namespace: nauka-terraform
 spec:
-  replicas: 5 # Zacznijmy od 1, potem zmienimy to na GitHubie!
+  replicas: 0 # Zacznijmy od 1, potem zmienimy to na GitHubie!
   selector:
     matchLabels:
       app: gitops-nginx
