@@ -57,28 +57,19 @@ resource "kubernetes_namespace" "test" {
   depends_on = [kind_cluster.moj_lab]
 }
 
-# 5. Instalacja Nginx przez Helm
-resource "helm_release" "nginx" {
-  name       = "moj-nginx-z-helma"
-  repository = "oci://registry-1.docker.io/bitnamicharts"
-  chart      = "nginx"
-  version    = "15.4.2"
+# Instalacja ArgoCD (Serce GitOpsa)
+resource "helm_release" "argocd" {
+  name             = "argocd"
+  repository       = "https://argoproj.github.io/argo-helm"
+  chart            = "argo-cd"
+  version          = "5.46.7"
+  namespace        = "argocd"
+  create_namespace = true
 
-  namespace = kubernetes_namespace.test.metadata[0].name
-
+  # Wyłączamy SSL wewnątrz klastra (dla uproszczenia laba)
   set {
-    name  = "service.type"
-    value = "ClusterIP"
-  }
-
-  set {
-    name  = "replicaCount"
-    value = "3"
-  }
-
-  set {
-    name  = "image.tag"
-    value = "latest"
+    name  = "server.extraArgs"
+    value = "{--insecure}"
   }
 
   depends_on = [kind_cluster.moj_lab]
