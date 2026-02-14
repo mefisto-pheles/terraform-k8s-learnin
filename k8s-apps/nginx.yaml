@@ -1,0 +1,34 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: gitops-nginx
+  namespace: nauka-terraform
+spec:
+  replicas: 1 # Zacznijmy od 1, potem zmienimy to na GitHubie!
+  selector:
+    matchLabels:
+      app: gitops-nginx
+  template:
+    metadata:
+      labels:
+        app: gitops-nginx
+    spec:
+      containers:
+      - name: nginx
+        image: nginx:latest
+        ports:
+        - containerPort: 80
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: gitops-nginx-service
+  namespace: nauka-terraform
+spec:
+  selector:
+    app: gitops-nginx
+  ports:
+    - protocol: TCP
+      port: 80
+      targetPort: 80
+  type: ClusterIP
